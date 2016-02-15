@@ -18,6 +18,8 @@ namespace Asteroids
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        public static Texture2D ship;
+        Ship controlShip;
 
         public Game1()
         {
@@ -46,7 +48,8 @@ namespace Asteroids
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            ship = Content.Load<Texture2D>("ship");
+            controlShip = new Ship(new Vector2(100, 100));
             // TODO: use this.Content to load your game content here
         }
 
@@ -66,10 +69,27 @@ namespace Asteroids
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            KeyMouseReader.Update();
+
+            if (KeyMouseReader.KeyPressed(Keys.Escape))
                 this.Exit();
 
+            if (KeyMouseReader.KeyPressed(Keys.A))
+                controlShip.MoveLeft();
+
+            if (KeyMouseReader.KeyPressed(Keys.D))
+                controlShip.MoveRight();
+
+            if (KeyMouseReader.KeyPressed(Keys.Space))
+            {
+                //AIControlled = !AIControlled;
+                //crashes = 0;
+                //roundStart = DateTime.Now;
+
+            }
+
+
+            controlShip.Update(gameTime);
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -83,6 +103,11 @@ namespace Asteroids
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            spriteBatch.Begin();
+
+            controlShip.Draw(spriteBatch);
+
+            spriteBatch.End();
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
