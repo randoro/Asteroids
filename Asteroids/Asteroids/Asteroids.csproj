@@ -72,12 +72,15 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ControlCar.cs" />
+    <Compile Include="AttackState.cs" />
+    <Compile Include="Ball.cs" />
+    <Compile Include="GameObject.cs" />
+    <Compile Include="Ship.cs" />
     <Compile Include="FSMachine.cs" />
     <Compile Include="FSMAIControl.cs" />
     <Compile Include="FSMState.cs" />
     <Compile Include="Globals.cs" />
-    <Compile Include="IdleState.cs" />
+    <Compile Include="EvadeState.cs" />
     <Compile Include="KeyMouseReader.cs" />
     <Compile Include="MoveState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

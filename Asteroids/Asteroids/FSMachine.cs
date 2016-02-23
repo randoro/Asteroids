@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,18 +12,14 @@ namespace Asteroids
 
     class FSMachine
     {
-        //List<LinkedList<FallingCar>> queueList;
         List<FSMState> states;
-        public FSMState currentState = null;
-        FSMState defaultState = null;
-        FSMState goalState = null;
-        FSMStateEnum goalStateID = FSMStateEnum.none;
+        List<FSMState> activated;
+        float highestTotal = 0.0f;
 
         public FSMachine()
         {
-            //this.queueList = queueList;
             states = new List<FSMState>();
-            //currentState = FSMState.idleBestState;
+            activated = new List<FSMState>();
         }
 
 
@@ -32,28 +29,48 @@ namespace Asteroids
             if (states.Count == 0)
                 return;
 
-            //don't do anything if there's no current 
-            //state, and no default state
-            if (currentState == null)
-                currentState = defaultState;
-            if (currentState == null)
-                return;
-
-            //check for transitions, and then update
-            FSMStateEnum oldStateID = currentState.GetID();
-            goalStateID = currentState.CheckTransitions();
-
-            //switch if there was a transition
-            if (goalStateID != oldStateID)
+            //check for activations, and then update
+            activated.Clear();
+            List<FSMState> nonActiveStates = new List<FSMState>();
+            for (int i = 0; i < states.Count; i++)
             {
-                if (TransitionState(goalStateID))
-                {
-                    currentState.Exit();
-                    currentState = goalState;
-                    currentState.Enter();
-                }
+                if (states[i].CalculateActivation() > 0)
+                    activated.Add(states[i]);
+                else
+                    nonActiveStates.Add(states[i]);
             }
-            currentState.Update(gameTime);	
+
+            //Exit all non active states for cleanup
+            if (nonActiveStates.Count != 0)
+            {
+                for (int i = 0; i < nonActiveStates.Count; i++)
+                    nonActiveStates[i].Exit();
+            }
+
+            //Update all activated states
+            if (activated.Count != 0)
+            {
+                for (int i = 0; i < activated.Count; i++)
+                    activated[i].Update(gameTime);
+            }
+        }
+
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.DrawString(Game1.font, "max total " + highestTotal, new Vector2(30, 10), Color.White);
+            float tempHighest = 0.0f;
+            for (int i = 0; i < states.Count; i++)
+            {
+                tempHighest += states[i].activation;
+                spriteBatch.DrawString(Game1.font, "state" + i + ": " + states[i].activation.ToString(), new Vector2(30, 30 + 20 * i), Color.White);
+            }
+            if (tempHighest > highestTotal)
+            {
+                highestTotal = tempHighest;
+            }
+
+
         }
 
         public void AddState(FSMState newState)
@@ -63,29 +80,21 @@ namespace Asteroids
 
         public void SetDefaultState(FSMState state) 
         {
-            defaultState = state; 
+            //defaultState = state; 
         }
 
         void SetGoalID(FSMStateEnum goal) 
         {
-            goalStateID = goal; 
+            //goalStateID = goal; 
         }
 
-        bool TransitionState(FSMStateEnum goal)
+        public bool IsActive(FSMState state)
         {
-            //don't do anything if you have no states
-            if (states.Count == 0)
-                return false;
-
-            //determine if we have state of type 'goal'
-            //in the list, and switch to it, otherwise, quit out
-            for (int i = 0; i < states.Count; i++)
+            if (activated.Count != 0)
             {
-                if (states[i].GetID() == goal)
-                {
-                    goalState = states[i];
-                    return true;
-                }
+                for (int i = 0; i < activated.Count; i++)
+                    if (activated[i] == state)
+                        return true;
             }
             return false;
         }
@@ -93,17 +102,11 @@ namespace Asteroids
 
         public void Reset()
         {
-            if (currentState != null)
-                currentState.Exit();
-            currentState = defaultState;
-
-            //init all the states
             for (int i = 0; i < states.Count; i++)
+            {
+                states[i].Exit();
                 states[i].Init();
-
-            //and now enter the m_defaultState, if any
-            if (currentState != null)
-                currentState.Enter();
+            }
 
         }
 

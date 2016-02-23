@@ -19,7 +19,11 @@ namespace Asteroids
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         public static Texture2D ship;
-        Ship controlShip;
+        public static SpriteFont font;
+        public static List<GameObject> objList;
+        public static Ship controlShip;
+        FSMAIControl AIcontrol;
+        private bool AIControlled;
 
         public Game1()
         {
@@ -37,6 +41,8 @@ namespace Asteroids
         {
             // TODO: Add your initialization logic here
 
+            this.IsMouseVisible = true;
+
             base.Initialize();
         }
 
@@ -49,8 +55,15 @@ namespace Asteroids
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             ship = Content.Load<Texture2D>("ship");
+            font = Content.Load<SpriteFont>("font");
+            objList = new List<GameObject>();
             controlShip = new Ship(new Vector2(100, 100));
+            AIcontrol = new FSMAIControl();
             // TODO: use this.Content to load your game content here
+
+            objList.Add(new Ball(new Vector2(800, 400)));
+            objList[0].currentVelocity = new Vector2(-2.1f, 0.0f);
+            //objList.Add(new Ball(new Vector2(300, 300)));
         }
 
         /// <summary>
@@ -74,17 +87,34 @@ namespace Asteroids
             if (KeyMouseReader.KeyPressed(Keys.Escape))
                 this.Exit();
 
-            if (KeyMouseReader.KeyPressed(Keys.A))
+            if (Keyboard.GetState().IsKeyDown(Keys.A))
                 controlShip.MoveLeft();
 
-            if (KeyMouseReader.KeyPressed(Keys.D))
+            if (Keyboard.GetState().IsKeyDown(Keys.D))
                 controlShip.MoveRight();
+
+            if (Keyboard.GetState().IsKeyDown(Keys.W))
+                controlShip.IncreaseSpeed();
+
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
+                controlShip.DecreaseSpeed();
 
             if (KeyMouseReader.KeyPressed(Keys.Space))
             {
-                //AIControlled = !AIControlled;
+                AIControlled = !AIControlled;
                 //crashes = 0;
                 //roundStart = DateTime.Now;
+
+            }
+
+            if (AIControlled)
+            {
+                AIcontrol.Update(gameTime);
+            }
+
+            for (int i = 0; i < objList.Count; i++)
+            {
+                objList[i].Update(gameTime);
 
             }
 
@@ -105,12 +135,43 @@ namespace Asteroids
 
             spriteBatch.Begin();
 
+
+            for (int i = 0; i < objList.Count; i++)
+            {
+                objList[i].Draw(spriteBatch);
+
+            }
             controlShip.Draw(spriteBatch);
+            AIcontrol.Draw(spriteBatch);
 
             spriteBatch.End();
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
+        }
+
+
+        public static GameObject getNearestObject(GameObject locationObj)
+        {
+            if (objList.Count == 0)
+                return null;
+
+            int nr = 0;
+            float length = float.MaxValue;
+
+            for (int i = 0; i < objList.Count; i++)
+            {
+                float newDist;
+                Vector2.Distance(ref locationObj.position, ref objList[i].position, out newDist);
+                if (newDist < length)
+                {
+                    length = newDist;
+                    nr = i;
+                }
+
+            }
+
+            return objList[nr];
         }
     }
 }

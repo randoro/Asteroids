@@ -5,3 +5,4 @@ D:\SourceTree\Asteroids\Asteroids\Asteroids\obj\x86\Debug\Microsoft.Xna.Framewor
 D:\SourceTree\Asteroids\Asteroids\Asteroids\obj\x86\Debug\Asteroids.exe
 D:\SourceTree\Asteroids\Asteroids\Asteroids\obj\x86\Debug\Asteroids.pdb
 D:\SourceTree\Asteroids\Asteroids\Asteroids\bin\x86\Debug\Content\ship.xnb
+D:\SourceTree\Asteroids\Asteroids\Asteroids\bin\x86\Debug\Content\font.xnb
