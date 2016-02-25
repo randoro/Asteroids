@@ -10,7 +10,6 @@ namespace Asteroids
     public class Ship : GameObject
     {
         float directionRadian;
-        public Vector2 directionVect;
 
         public Ship(Vector2 position)
         {
@@ -19,36 +18,39 @@ namespace Asteroids
             currentVelocity = new Vector2(0, 0);
             this.position = position;
             sourceRect = new Rectangle((int)position.X, (int)position.Y, 28, 28);
-            directionVect = new Vector2((float)Math.Cos(directionRadian), (float)Math.Sin(directionRadian));
         }
 
         public override void Update(GameTime gameTime)
         {
+            CorrectSpeed();
+
             if (!(currentVelocity.X == 0))
-                position.X += currentVelocity.X; //Globals.MAX_AG_SHIP_SPEED * Vector2.Normalize(currentVelocity).X;
+                position.X += currentVelocity.X;
 
             if (!(currentVelocity.Y == 0))
-                position.Y += currentVelocity.Y;//Globals.MAX_AG_SHIP_SPEED * Vector2.Normalize(currentVelocity).Y;
-            //position += currentVelocity * Vector2.Normalize(directionVect); //* new Vector2((float)Math.Cos(directionRadian), (float)Math.Sin(directionRadian));
+                position.Y += currentVelocity.Y;
+
             sourceRect.X = (int)position.X;
             sourceRect.Y = (int)position.Y;
+
+            //directionRadian = Angle(Vector2.Zero, currentVelocity);
 
             currentVelocity.X = 0;
             currentVelocity.Y = 0;
 
-        }
+            
 
+        }
 
         public void MoveRight()
         {
             directionRadian += 0.1f;
-            directionVect = new Vector2((float)Math.Cos(directionRadian), (float)Math.Sin(directionRadian));
+            
         }
 
         public void MoveLeft()
         {
             directionRadian -= 0.1f;
-            directionVect = new Vector2((float)Math.Cos(directionRadian), (float)Math.Sin(directionRadian));
 
 
         }
@@ -63,13 +65,13 @@ namespace Asteroids
         public void IncreaseSpeed()
         {
             currentVelocity += 5.5f * new Vector2((float)Math.Cos(directionRadian), (float)Math.Sin(directionRadian));
-            //CorrectSpeed();
+            CorrectSpeed();
         }
 
         public void DecreaseSpeed()
         {
             currentVelocity -= 5.5f * new Vector2((float)Math.Cos(directionRadian), (float)Math.Sin(directionRadian));
-            //CorrectSpeed();
+            CorrectSpeed();
         }
 
         private void CorrectSpeed()
@@ -87,10 +89,6 @@ namespace Asteroids
                 currentVelocity.Y = -3.0f;
         }
 
-        public int GetShotLevel()
-        {
-            return 5;
-        }
 
         public void ChangeDirection(Vector2 offset)
         {

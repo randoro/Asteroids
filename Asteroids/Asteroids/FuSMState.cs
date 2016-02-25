@@ -6,11 +6,10 @@ using System.Text;
 
 namespace Asteroids
 {
-    public abstract class FSMState
+    public abstract class FuSMState
     {
-        FSMStateEnum state;
         public float activation;
-        protected FSMAIControl control;
+        protected FuSMAIControl control;
 
         public virtual void Enter() { }
         public virtual void Exit() { }

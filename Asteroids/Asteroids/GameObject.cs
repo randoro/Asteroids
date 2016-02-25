@@ -18,5 +18,10 @@ namespace Asteroids
         public abstract void Update(GameTime gameTime);
 
         public abstract void Draw(SpriteBatch spriteBatch);
+
+        public float Angle(Vector2 from, Vector2 to)
+        {
+            return (float)Math.Atan2(from.X - to.X, to.Y - from.Y);
+        }
     }
 }

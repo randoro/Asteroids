@@ -8,18 +8,16 @@ using System.Text;
 namespace Asteroids
 {
 
-    public enum FSMStateEnum { none, idleBestState, checkPathState, moveState }
-
-    class FSMachine
+    class FuSMachine
     {
-        List<FSMState> states;
-        List<FSMState> activated;
+        List<FuSMState> states;
+        List<FuSMState> activated;
         float highestTotal = 0.0f;
 
-        public FSMachine()
+        public FuSMachine()
         {
-            states = new List<FSMState>();
-            activated = new List<FSMState>();
+            states = new List<FuSMState>();
+            activated = new List<FuSMState>();
         }
 
 
@@ -31,7 +29,7 @@ namespace Asteroids
 
             //check for activations, and then update
             activated.Clear();
-            List<FSMState> nonActiveStates = new List<FSMState>();
+            List<FuSMState> nonActiveStates = new List<FuSMState>();
             for (int i = 0; i < states.Count; i++)
             {
                 if (states[i].CalculateActivation() > 0)
@@ -58,13 +56,16 @@ namespace Asteroids
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.DrawString(Game1.font, "max total " + highestTotal, new Vector2(30, 10), Color.White);
+            spriteBatch.DrawString(Game1.font, "Max Total: " + highestTotal, new Vector2(30, 10), Color.White);
             float tempHighest = 0.0f;
-            for (int i = 0; i < states.Count; i++)
-            {
-                tempHighest += states[i].activation;
-                spriteBatch.DrawString(Game1.font, "state" + i + ": " + states[i].activation.ToString(), new Vector2(30, 30 + 20 * i), Color.White);
-            }
+            
+                tempHighest += states[0].activation;
+                spriteBatch.DrawString(Game1.font, "EvadeState: " + states[0].activation.ToString(), new Vector2(30, 30 + 25 * 0), Color.White);
+
+                tempHighest += states[1].activation;
+                spriteBatch.DrawString(Game1.font, "MoveToState: " + states[1].activation.ToString(), new Vector2(30, 30 + 25 * 1), Color.White);
+            
+
             if (tempHighest > highestTotal)
             {
                 highestTotal = tempHighest;
@@ -73,22 +74,12 @@ namespace Asteroids
 
         }
 
-        public void AddState(FSMState newState)
+        public void AddState(FuSMState newState)
         {
             states.Add(newState);
         }
 
-        public void SetDefaultState(FSMState state) 
-        {
-            //defaultState = state; 
-        }
-
-        void SetGoalID(FSMStateEnum goal) 
-        {
-            //goalStateID = goal; 
-        }
-
-        public bool IsActive(FSMState state)
+        public bool IsActive(FuSMState state)
         {
             if (activated.Count != 0)
             {

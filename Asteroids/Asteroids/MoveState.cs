@@ -6,10 +6,10 @@ using System.Text;
 
 namespace Asteroids
 {
-    class MoveState : FSMState
+    class MoveState : FuSMState
     {
 
-        public MoveState(FSMAIControl control) 
+        public MoveState(FuSMAIControl control) 
         {
             this.control = control;
         }
@@ -17,13 +17,13 @@ namespace Asteroids
         public override void Update(GameTime GameTime) 
         {
             //turn and then thrust towards closest asteroid
-            GameObject asteroid = control.nearestObj;
+            GameObject nearestBall = control.nearestObj;
             Ship ship = Game1.controlShip;
-            Vector2 deltaPos = asteroid.position - ship.position;
-            Vector2 targetPos = asteroid.position;
+            Vector2 deltaPos = nearestBall.position - ship.position;
+            Vector2 targetPos = nearestBall.position;
 
             float dotVelocity = 0.0f;
-            Vector2.Dot(ref ship.currentVelocity, ref asteroid.currentVelocity, out dotVelocity);
+            Vector2.Dot(ref ship.currentVelocity, ref nearestBall.currentVelocity, out dotVelocity);
 
             float tempDot = 0.0f;
             Vector2.Dot(ref deltaPos, ref ship.currentVelocity, out tempDot);
@@ -36,16 +36,15 @@ namespace Asteroids
                     tempVect = Vector2.Normalize(shipVel) * control.maxSpeed;
                 }
                 shipVel = tempVect;
-                float combinedSpeed = ((deltaPos * control.maxSpeed) + asteroid.currentVelocity).Length();
+                float combinedSpeed = ((deltaPos * control.maxSpeed) + nearestBall.currentVelocity).Length();
                 float predictionTime = deltaPos.Length() / combinedSpeed;
-                targetPos = asteroid.position + (asteroid.currentVelocity * predictionTime);
-                deltaPos = (targetPos - ship.position) * 0.01f;
+                targetPos = nearestBall.position + (nearestBall.currentVelocity * predictionTime);
+                deltaPos = (targetPos - ship.position) * 0.02f; //Number makes sure the movement is made at proper speed.
             }
 
             //move there
             ship.ChangeDirection(deltaPos * activation);
 
-            //parent->m_target->m_position = asteroid->m_position;
         }
 
         public override void Init() 

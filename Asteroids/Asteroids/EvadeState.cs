@@ -6,10 +6,10 @@ using System.Text;
 
 namespace Asteroids
 {
-    class EvadeState : FSMState
+    class EvadeState : FuSMState
     {
 
-        public EvadeState(FSMAIControl control) 
+        public EvadeState(FuSMAIControl control) 
         {
             this.control = control;
         }
@@ -22,7 +22,7 @@ namespace Asteroids
             //evade by going away from the closest asteroid
             GameObject asteroid = control.nearestObj;
             Ship ship = Game1.controlShip;
-            Vector2 vecBrake = (ship.position - asteroid.position) * 0.01f;
+            Vector2 vecBrake = (ship.position - asteroid.position) * 0.02f; //Number makes sure the movement is made at proper speed.
             
 
             ship.ChangeDirection(vecBrake * activation);

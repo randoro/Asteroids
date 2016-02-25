@@ -22,8 +22,15 @@ namespace Asteroids
         public static SpriteFont font;
         public static List<GameObject> objList;
         public static Ship controlShip;
-        FSMAIControl AIcontrol;
+        FuSMAIControl AIcontrol;
         private bool AIControlled;
+
+        static int spawnCounter = 0;
+        static int spawnCounterMax = 5;
+
+        static int despawnCounter = 0;
+        static int despawnCounterMax = 400;
+
 
         public Game1()
         {
@@ -40,7 +47,9 @@ namespace Asteroids
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            graphics.PreferredBackBufferWidth = Globals.windowX;
+            graphics.PreferredBackBufferHeight = Globals.windowY;
+            graphics.ApplyChanges();
             this.IsMouseVisible = true;
 
             base.Initialize();
@@ -57,12 +66,12 @@ namespace Asteroids
             ship = Content.Load<Texture2D>("ship");
             font = Content.Load<SpriteFont>("font");
             objList = new List<GameObject>();
-            controlShip = new Ship(new Vector2(100, 100));
-            AIcontrol = new FSMAIControl();
+            controlShip = new Ship(new Vector2(500, 500));
+            AIcontrol = new FuSMAIControl();
             // TODO: use this.Content to load your game content here
 
-            objList.Add(new Ball(new Vector2(800, 400)));
-            objList[0].currentVelocity = new Vector2(-2.1f, 0.0f);
+            //objList.Add(new Ball(new Vector2(800, 400)));
+            //objList[0].currentVelocity = new Vector2(-2.1f, 0.0f);
             //objList.Add(new Ball(new Vector2(300, 300)));
         }
 
@@ -84,21 +93,6 @@ namespace Asteroids
         {
             KeyMouseReader.Update();
 
-            if (KeyMouseReader.KeyPressed(Keys.Escape))
-                this.Exit();
-
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
-                controlShip.MoveLeft();
-
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
-                controlShip.MoveRight();
-
-            if (Keyboard.GetState().IsKeyDown(Keys.W))
-                controlShip.IncreaseSpeed();
-
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
-                controlShip.DecreaseSpeed();
-
             if (KeyMouseReader.KeyPressed(Keys.Space))
             {
                 AIControlled = !AIControlled;
@@ -107,9 +101,31 @@ namespace Asteroids
 
             }
 
+            SpawnBall();
+
+            ClearBalls();
+
             if (AIControlled)
             {
                 AIcontrol.Update(gameTime);
+
+            }
+            else
+            {
+                if (KeyMouseReader.KeyPressed(Keys.Escape))
+                    this.Exit();
+
+                if (Keyboard.GetState().IsKeyDown(Keys.A))
+                    controlShip.MoveLeft();
+
+                if (Keyboard.GetState().IsKeyDown(Keys.D))
+                    controlShip.MoveRight();
+
+                if (Keyboard.GetState().IsKeyDown(Keys.W))
+                    controlShip.IncreaseSpeed();
+
+                if (Keyboard.GetState().IsKeyDown(Keys.S))
+                    controlShip.DecreaseSpeed();
             }
 
             for (int i = 0; i < objList.Count; i++)
@@ -118,9 +134,7 @@ namespace Asteroids
 
             }
 
-
             controlShip.Update(gameTime);
-            // TODO: Add your update logic here
 
             base.Update(gameTime);
         }
@@ -145,33 +159,90 @@ namespace Asteroids
             AIcontrol.Draw(spriteBatch);
 
             spriteBatch.End();
-            // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }
 
 
-        public static GameObject getNearestObject(GameObject locationObj)
+        public static GameObject getNearestEnemyObject(GameObject locationObj)
         {
             if (objList.Count == 0)
                 return null;
 
-            int nr = 0;
+            int nr = -1;
             float length = float.MaxValue;
 
             for (int i = 0; i < objList.Count; i++)
             {
-                float newDist;
-                Vector2.Distance(ref locationObj.position, ref objList[i].position, out newDist);
-                if (newDist < length)
+                if (objList[i] is Ball)
                 {
-                    length = newDist;
-                    nr = i;
+                    float newDist;
+                    Vector2.Distance(ref locationObj.position, ref objList[i].position, out newDist);
+                    if (newDist < length)
+                    {
+                        length = newDist;
+                        nr = i;
+                    }
                 }
 
             }
 
             return objList[nr];
+        }
+
+        public static void SpawnBall()
+        {
+            spawnCounter++;
+            if(spawnCounter > spawnCounterMax) 
+            {
+                spawnCounter = 0;
+
+                int xory = Globals.rand.Next(0, 2);
+                int side = Globals.rand.Next(0, 2);
+                int xpos = 0;
+                int ypos = 0;
+
+                if (xory == 0)
+                {
+                    xpos = side * Globals.windowX;
+                    ypos = Globals.rand.Next(0, Globals.windowY);
+                }
+                else
+                {
+                    xpos = Globals.rand.Next(0, Globals.windowX);
+                    ypos = side * Globals.windowY;
+                }
+
+                double xSpeed = Globals.rand.NextDouble();
+                double ySpeed = Globals.rand.NextDouble();
+
+                float realSpeedX = (float)((xSpeed * 2) - 1.0f);
+                float realSpeedY = (float)((ySpeed * 2) - 1.0f);
+
+                objList.Add(new Ball(new Vector2(xpos, ypos), new Vector2(realSpeedX, realSpeedY)));
+
+            }
+
+        }
+
+        public static void ClearBalls()
+        {
+            despawnCounter++;
+            if (despawnCounter > despawnCounterMax)
+            {
+                despawnCounter = 0;
+
+
+                for (int i = objList.Count - 1; i > 0; i--)
+                {
+                    Vector2 pos = objList[i].position;
+                    if (pos.X < 0 || pos.X > Globals.windowX || pos.Y < 0 || pos.Y > Globals.windowY)
+                    {
+                        objList.RemoveAt(i);
+                    }
+
+                }
+            }
         }
     }
 }
