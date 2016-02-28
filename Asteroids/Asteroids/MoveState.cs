@@ -16,7 +16,6 @@ namespace Asteroids
 
         public override void Update(GameTime GameTime) 
         {
-            //turn and then thrust towards closest asteroid
             GameObject nearestBall = control.nearestObj;
             Ship ship = Game1.controlShip;
             Vector2 deltaPos = nearestBall.position - ship.position;
@@ -42,7 +41,6 @@ namespace Asteroids
                 deltaPos = (targetPos - ship.position) * 0.02f; //Number makes sure the movement is made at proper speed.
             }
 
-            //move there
             ship.ChangeDirection(deltaPos * activation);
 
         }
@@ -57,7 +55,7 @@ namespace Asteroids
             if (control.nearestObj == null)
                 activation = 0.0f;
             else
-                activation = (control.nearestObjDist - Globals.FU_APPROACH_DIST) / Globals.FU_APPROACH_DIST;
+                activation = (control.nearestObjDist - Globals.VisionDistance) / Globals.VisionDistance;
                 
 
             CheckBounds();

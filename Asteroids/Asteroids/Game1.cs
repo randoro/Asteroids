@@ -26,7 +26,7 @@ namespace Asteroids
         private bool AIControlled;
 
         static int spawnCounter = 0;
-        static int spawnCounterMax = 5;
+        static int spawnCounterMax = 8;
 
         static int despawnCounter = 0;
         static int despawnCounterMax = 400;
@@ -197,30 +197,33 @@ namespace Asteroids
             {
                 spawnCounter = 0;
 
-                int xory = Globals.rand.Next(0, 2);
-                int side = Globals.rand.Next(0, 2);
-                int xpos = 0;
-                int ypos = 0;
 
-                if (xory == 0)
+                if (objList.Count < Globals.MaxBalls)
                 {
-                    xpos = side * Globals.windowX;
-                    ypos = Globals.rand.Next(0, Globals.windowY);
+                    int xory = Globals.rand.Next(0, 2);
+                    int side = Globals.rand.Next(0, 2);
+                    int xpos = 0;
+                    int ypos = 0;
+
+                    if (xory == 0)
+                    {
+                        xpos = side * Globals.windowX;
+                        ypos = Globals.rand.Next(0, Globals.windowY);
+                    }
+                    else
+                    {
+                        xpos = Globals.rand.Next(0, Globals.windowX);
+                        ypos = side * Globals.windowY;
+                    }
+
+                    double xSpeed = Globals.rand.NextDouble();
+                    double ySpeed = Globals.rand.NextDouble();
+
+                    float realSpeedX = (float)((xSpeed * 2) - 1.0f);
+                    float realSpeedY = (float)((ySpeed * 2) - 1.0f);
+
+                    objList.Add(new Ball(new Vector2(xpos, ypos), new Vector2(realSpeedX, realSpeedY)));
                 }
-                else
-                {
-                    xpos = Globals.rand.Next(0, Globals.windowX);
-                    ypos = side * Globals.windowY;
-                }
-
-                double xSpeed = Globals.rand.NextDouble();
-                double ySpeed = Globals.rand.NextDouble();
-
-                float realSpeedX = (float)((xSpeed * 2) - 1.0f);
-                float realSpeedY = (float)((ySpeed * 2) - 1.0f);
-
-                objList.Add(new Ball(new Vector2(xpos, ypos), new Vector2(realSpeedX, realSpeedY)));
-
             }
 
         }

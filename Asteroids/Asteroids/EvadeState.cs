@@ -18,8 +18,6 @@ namespace Asteroids
 
         public override void Update(GameTime GameTime) 
         {
-
-            //evade by going away from the closest asteroid
             GameObject asteroid = control.nearestObj;
             Ship ship = Game1.controlShip;
             Vector2 vecBrake = (ship.position - asteroid.position) * 0.02f; //Number makes sure the movement is made at proper speed.

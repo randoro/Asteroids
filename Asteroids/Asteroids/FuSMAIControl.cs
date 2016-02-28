@@ -40,19 +40,15 @@ namespace Asteroids
 
         private void UpdatePerceptions(GameTime gameTime)
         {
-            //store closest asteroid and powerup
             nearestObj = null;
             nearestObj = Game1.getNearestEnemyObject(Game1.controlShip);
 
-            //asteroid collision determination
             willCollide = false;
             if (nearestObj != null)
             {
                 Vector2.Distance(ref nearestObj.position, ref Game1.controlShip.position, out nearestObjDist);
                  float adjSafetyRadius = safetyRadius + nearestObj.size;
 
-                //if you're too close,
-                //flag a collision
                 if (nearestObjDist <= adjSafetyRadius)
                     willCollide = true;
             }
